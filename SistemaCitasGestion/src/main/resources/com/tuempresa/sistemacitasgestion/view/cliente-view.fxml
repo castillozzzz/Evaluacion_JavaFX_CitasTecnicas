@@ -7,6 +7,8 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
@@ -16,43 +18,61 @@
         <Insets top="20" right="24" bottom="20" left="24"/>
     </padding>
 
-    <HBox spacing="10" alignment="CENTER_LEFT">
-        <TextField fx:id="txtBuscar" promptText="Buscar por nombres, apellidos o correo" HBox.hgrow="ALWAYS"/>
+    <!-- Barra de búsqueda -->
+    <HBox spacing="10" alignment="CENTER_LEFT" styleClass="barra-filtros">
+        <TextField fx:id="txtBuscar" promptText="Buscar por nombres, apellidos o correo"
+                   HBox.hgrow="ALWAYS"/>
         <Button text="Buscar" styleClass="boton-primario" onAction="#buscar"/>
         <Button text="Ver todos" styleClass="boton-secundario" onAction="#verTodos"/>
     </HBox>
 
     <HBox spacing="16" VBox.vgrow="ALWAYS">
-        <VBox spacing="8" styleClass="tarjeta" prefWidth="300" minWidth="300">
+
+        <!-- Formulario -->
+        <VBox spacing="6" styleClass="tarjeta" prefWidth="320" minWidth="320" maxWidth="320">
             <Label text="Datos del cliente" styleClass="seccion-titulo"/>
+
             <Label text="Nombres" styleClass="etiqueta"/>
-            <TextField fx:id="txtNombres"/>
+            <TextField fx:id="txtNombres" promptText="Ej: María José"/>
+
             <Label text="Apellidos" styleClass="etiqueta"/>
-            <TextField fx:id="txtApellidos"/>
+            <TextField fx:id="txtApellidos" promptText="Ej: Pérez López"/>
+
             <Label text="Teléfono" styleClass="etiqueta"/>
-            <TextField fx:id="txtTelefono"/>
+            <TextField fx:id="txtTelefono" promptText="Ej: 8888 0000"/>
+
             <Label text="Correo" styleClass="etiqueta"/>
-            <TextField fx:id="txtCorreo"/>
-            <CheckBox fx:id="chkActivo" text="Cliente activo" selected="true"/>
-            <HBox spacing="8">
+            <TextField fx:id="txtCorreo" promptText="Ej: maria@correo.com"/>
+
+            <CheckBox fx:id="chkActivo" text="Cliente activo" selected="true">
+                <VBox.margin>
+                    <Insets top="6" bottom="6"/>
+                </VBox.margin>
+            </CheckBox>
+
+            <!-- Botones: dos columnas del mismo ancho -->
+            <GridPane hgap="8" vgap="8">
+                <columnConstraints>
+                    <ColumnConstraints percentWidth="50"/>
+                    <ColumnConstraints percentWidth="50"/>
+                </columnConstraints>
+
                 <Button text="Guardar" styleClass="boton-primario" onAction="#guardar"
-                        HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+                        maxWidth="Infinity" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
                 <Button text="Actualizar" styleClass="boton-secundario" onAction="#actualizar"
-                        HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
-            </HBox>
-            <HBox spacing="8">
+                        maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
                 <Button text="Eliminar" styleClass="boton-peligro" onAction="#eliminar"
-                        HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+                        maxWidth="Infinity" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
                 <Button text="Limpiar" styleClass="boton-secundario" onAction="#limpiar"
-                        HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
-            </HBox>
+                        maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+            </GridPane>
         </VBox>
 
+        <!-- Tabla -->
         <VBox spacing="10" styleClass="tarjeta" HBox.hgrow="ALWAYS">
             <Label text="Listado de clientes" styleClass="seccion-titulo"/>
             <TableView fx:id="tablaClientes" VBox.vgrow="ALWAYS">
                 <columns>
-                    <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
                     <TableColumn fx:id="colNombre" text="Nombre completo" prefWidth="200"/>
                     <TableColumn fx:id="colTelefono" text="Teléfono" prefWidth="110"/>
                     <TableColumn fx:id="colCorreo" text="Correo" prefWidth="200"/>
@@ -61,6 +81,9 @@
                 <columnResizePolicy>
                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
                 </columnResizePolicy>
+                <placeholder>
+                    <Label text="No hay clientes registrados" styleClass="texto-vacio"/>
+                </placeholder>
             </TableView>
         </VBox>
     </HBox>

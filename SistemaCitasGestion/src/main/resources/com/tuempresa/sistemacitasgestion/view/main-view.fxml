@@ -14,7 +14,7 @@
         </VBox>
     </top>
     <center>
-        <TabPane tabClosingPolicy="UNAVAILABLE">
+        <TabPane tabClosingPolicy="UNAVAILABLE" styleClass="pestanas">
             <Tab text="Clientes">
                 <fx:include source="cliente-view.fxml"/>
             </Tab>

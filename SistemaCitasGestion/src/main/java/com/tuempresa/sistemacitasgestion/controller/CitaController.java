@@ -7,6 +7,7 @@ import com.tuempresa.sistemacitasgestion.model.CitaTecnica;
 import com.tuempresa.sistemacitasgestion.model.Cliente;
 import com.tuempresa.sistemacitasgestion.util.Alertas;
 import com.tuempresa.sistemacitasgestion.util.ValidadorCita;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -25,6 +26,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.List;
 
 
 public class CitaController {
@@ -42,7 +44,6 @@ public class CitaController {
     @FXML private ComboBox<String> cmbEstado;
     @FXML private TextArea txtDescripcion;
     @FXML private TableView<CitaTecnica> tablaCitas;
-    @FXML private TableColumn<CitaTecnica, Integer> colId;
     @FXML private TableColumn<CitaTecnica, String> colCliente;
     @FXML private TableColumn<CitaTecnica, LocalDate> colFecha;
     @FXML private TableColumn<CitaTecnica, LocalTime> colHora;
@@ -58,7 +59,6 @@ public class CitaController {
 
     @FXML
     private void initialize() {
-        colId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colCliente.setCellValueFactory(new PropertyValueFactory<>("clienteNombre"));
         colFecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
         colHora.setCellValueFactory(new PropertyValueFactory<>("hora"));
@@ -171,11 +171,19 @@ public class CitaController {
         if (ignorarFiltros) {
             return;
         }
-        try {
-            datos.setAll(dao.filtrar(cmbFiltroEstado.getValue(), dpFiltroFecha.getValue()));
-        } catch (SQLException e) {
-            Alertas.errorSql(e);
-        }
+        String estado = cmbFiltroEstado.getValue();
+        LocalDate fecha = dpFiltroFecha.getValue();
+
+        Thread hilo = new Thread(() -> {
+            try {
+                List<CitaTecnica> lista = dao.filtrar(estado, fecha);
+                Platform.runLater(() -> datos.setAll(lista));
+            } catch (SQLException e) {
+                Platform.runLater(() -> Alertas.errorSql(e));
+            }
+        });
+        hilo.setDaemon(true);
+        hilo.start();
     }
 
 

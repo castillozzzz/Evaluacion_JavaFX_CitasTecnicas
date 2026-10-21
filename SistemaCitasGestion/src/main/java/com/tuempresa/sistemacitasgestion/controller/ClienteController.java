@@ -4,6 +4,7 @@ import com.tuempresa.sistemacitasgestion.dao.ClienteDAO;
 import com.tuempresa.sistemacitasgestion.model.Cliente;
 import com.tuempresa.sistemacitasgestion.util.Alertas;
 import com.tuempresa.sistemacitasgestion.util.Validador;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -15,6 +16,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.sql.SQLException;
+import java.util.List;
 
 public class ClienteController {
 
@@ -25,7 +27,6 @@ public class ClienteController {
     @FXML private TextField txtCorreo;
     @FXML private CheckBox chkActivo;
     @FXML private TableView<Cliente> tablaClientes;
-    @FXML private TableColumn<Cliente, Integer> colId;
     @FXML private TableColumn<Cliente, String> colNombre;
     @FXML private TableColumn<Cliente, String> colTelefono;
     @FXML private TableColumn<Cliente, String> colCorreo;
@@ -36,7 +37,6 @@ public class ClienteController {
 
     @FXML
     private void initialize() {
-        colId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colNombre.setCellValueFactory(new PropertyValueFactory<>("nombreCompleto"));
         colTelefono.setCellValueFactory(new PropertyValueFactory<>("telefono"));
         colCorreo.setCellValueFactory(new PropertyValueFactory<>("correo"));
@@ -59,11 +59,16 @@ public class ClienteController {
             cargar();
             return;
         }
-        try {
-            datos.setAll(dao.buscar(texto));
-        } catch (SQLException e) {
-            Alertas.errorSql(e);
-        }
+        Thread hilo = new Thread(() -> {
+            try {
+                List<Cliente> lista = dao.buscar(texto);
+                Platform.runLater(() -> datos.setAll(lista));
+            } catch (SQLException e) {
+                Platform.runLater(() -> Alertas.errorSql(e));
+            }
+        });
+        hilo.setDaemon(true);
+        hilo.start();
     }
 
     @FXML
@@ -142,11 +147,23 @@ public class ClienteController {
     }
 
     private void cargar() {
-        try {
-            datos.setAll(dao.listar());
-        } catch (SQLException e) {
-            Alertas.errorSql(e);
-        }
+        Thread hilo = new Thread(() -> {
+            try {
+                System.out.println("Consultando en: " + Thread.currentThread().getName());
+                Thread.sleep(10000);
+                List<Cliente> lista = dao.listar();
+                Platform.runLater(() -> {
+                    System.out.println("Actualizando tabla en: " + Thread.currentThread().getName());
+                    datos.setAll(lista);
+                });
+            } catch (SQLException e) {
+                Platform.runLater(() -> Alertas.errorSql(e));
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        });
+        hilo.setDaemon(true);
+        hilo.start();
     }
 
     private void refrescar() {

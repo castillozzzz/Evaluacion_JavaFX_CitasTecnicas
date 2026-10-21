@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-
 <?import javafx.collections.FXCollections?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
@@ -11,19 +10,20 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-
-
 <?import java.lang.String?>
+
 <VBox spacing="16" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.tuempresa.sistemacitasgestion.controller.CitaController">
     <padding>
         <Insets top="20" right="24" bottom="20" left="24"/>
     </padding>
 
-
-    <HBox spacing="10" alignment="CENTER_LEFT">
+    <!-- Filtros -->
+    <HBox spacing="10" alignment="CENTER_LEFT" styleClass="barra-filtros">
         <Label text="Filtrar por" styleClass="etiqueta"/>
         <ComboBox fx:id="cmbFiltroEstado" promptText="Estado" prefWidth="180">
             <items>
@@ -39,63 +39,82 @@
         <Button text="Limpiar filtros" styleClass="boton-secundario" onAction="#limpiarFiltros"/>
     </HBox>
 
-
     <HBox spacing="16" VBox.vgrow="ALWAYS">
-        <VBox spacing="6" styleClass="tarjeta" prefWidth="320" minWidth="320">
+
+        <!-- Formulario -->
+        <VBox spacing="6" styleClass="tarjeta" prefWidth="340" minWidth="340" maxWidth="340">
             <Label text="Datos de la cita" styleClass="seccion-titulo"/>
+
             <Label text="Cliente" styleClass="etiqueta"/>
             <ComboBox fx:id="cmbCliente" promptText="Seleccione un cliente" maxWidth="Infinity"/>
-            <HBox spacing="8">
-                <VBox spacing="4" prefWidth="100" HBox.hgrow="ALWAYS">
-                    <Label text="Fecha" styleClass="etiqueta"/>
-                    <DatePicker fx:id="dpFecha" maxWidth="Infinity"/>
-                </VBox>
-                <VBox spacing="4" prefWidth="100" HBox.hgrow="ALWAYS">
-                    <Label text="Hora (HH:mm)" styleClass="etiqueta"/>
-                    <TextField fx:id="txtHora" promptText="09:30"/>
-                </VBox>
-            </HBox>
-            <HBox spacing="8">
-                <VBox spacing="4" prefWidth="100" HBox.hgrow="ALWAYS">
-                    <Label text="Servicio" styleClass="etiqueta"/>
-                    <TextField fx:id="txtServicio"/>
-                </VBox>
-                <VBox spacing="4" prefWidth="100" HBox.hgrow="ALWAYS">
-                    <Label text="Estado" styleClass="etiqueta"/>
-                    <ComboBox fx:id="cmbEstado" value="Pendiente" maxWidth="Infinity">
-                        <items>
-                            <FXCollections fx:factory="observableArrayList">
-                                <String fx:value="Pendiente"/>
-                                <String fx:value="En proceso"/>
-                                <String fx:value="Finalizada"/>
-                                <String fx:value="Cancelada"/>
-                            </FXCollections>
-                        </items>
-                    </ComboBox>
-                </VBox>
-            </HBox>
+
+            <!-- Fecha y Hora: mismo ancho -->
+            <GridPane hgap="8" vgap="4">
+                <columnConstraints>
+                    <ColumnConstraints percentWidth="50"/>
+                    <ColumnConstraints percentWidth="50"/>
+                </columnConstraints>
+                <Label text="Fecha" styleClass="etiqueta" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                <Label text="Hora (HH:mm)" styleClass="etiqueta" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                <DatePicker fx:id="dpFecha" maxWidth="Infinity"
+                            GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                <TextField fx:id="txtHora" promptText="09:30"
+                           GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+            </GridPane>
+
+            <!-- Servicio y Estado: mismo ancho -->
+            <GridPane hgap="8" vgap="4">
+                <columnConstraints>
+                    <ColumnConstraints percentWidth="50"/>
+                    <ColumnConstraints percentWidth="50"/>
+                </columnConstraints>
+                <Label text="Servicio" styleClass="etiqueta" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                <Label text="Estado" styleClass="etiqueta" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                <TextField fx:id="txtServicio" promptText="Ej: Reparación"
+                           GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                <ComboBox fx:id="cmbEstado" value="Pendiente" maxWidth="Infinity"
+                          GridPane.columnIndex="1" GridPane.rowIndex="1">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value="Pendiente"/>
+                            <String fx:value="En proceso"/>
+                            <String fx:value="Finalizada"/>
+                            <String fx:value="Cancelada"/>
+                        </FXCollections>
+                    </items>
+                </ComboBox>
+            </GridPane>
+
             <Label text="Descripción" styleClass="etiqueta"/>
-            <TextArea fx:id="txtDescripcion" prefRowCount="2" wrapText="true"/>
-            <HBox spacing="8">
+            <TextArea fx:id="txtDescripcion" prefRowCount="3" wrapText="true"
+                      promptText="Detalles del problema o servicio"/>
+
+            <!-- Botones: dos columnas del mismo ancho -->
+            <GridPane hgap="8" vgap="8">
+                <columnConstraints>
+                    <ColumnConstraints percentWidth="50"/>
+                    <ColumnConstraints percentWidth="50"/>
+                </columnConstraints>
+                <padding>
+                    <Insets top="8"/>
+                </padding>
+
                 <Button text="Guardar" styleClass="boton-primario" onAction="#guardar"
-                        HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+                        maxWidth="Infinity" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
                 <Button text="Actualizar" styleClass="boton-secundario" onAction="#actualizar"
-                        HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
-            </HBox>
-            <HBox spacing="8">
+                        maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
                 <Button text="Eliminar" styleClass="boton-peligro" onAction="#eliminar"
-                        HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+                        maxWidth="Infinity" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
                 <Button text="Limpiar" styleClass="boton-secundario" onAction="#limpiar"
-                        HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
-            </HBox>
+                        maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+            </GridPane>
         </VBox>
 
-
+        <!-- Tabla -->
         <VBox spacing="10" styleClass="tarjeta" HBox.hgrow="ALWAYS">
             <Label text="Listado de citas" styleClass="seccion-titulo"/>
             <TableView fx:id="tablaCitas" VBox.vgrow="ALWAYS">
                 <columns>
-                    <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
                     <TableColumn fx:id="colCliente" text="Cliente" prefWidth="180"/>
                     <TableColumn fx:id="colFecha" text="Fecha" prefWidth="90"/>
                     <TableColumn fx:id="colHora" text="Hora" prefWidth="70"/>
@@ -105,6 +124,9 @@
                 <columnResizePolicy>
                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
                 </columnResizePolicy>
+                <placeholder>
+                    <Label text="No hay citas registradas" styleClass="texto-vacio"/>
+                </placeholder>
             </TableView>
         </VBox>
     </HBox>

@@ -3,6 +3,7 @@ package com.tuempresa.sistemacitasgestion;
 import com.tuempresa.sistemacitasgestion.config.ConexionBD;
 import com.tuempresa.sistemacitasgestion.util.Alertas;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -20,8 +21,14 @@ public class HelloApplication extends Application {
         stage.setScene(scene);
         stage.show();
 
-        if (!ConexionBD.probar()) {
-            Alertas.error("No se pudo conectar con PostgreSQL. Revise db.properties y que el contenedor esté activo.");
-        }
+        Thread hilo = new Thread(() -> {
+            boolean conectado = ConexionBD.probar();
+            if (!conectado) {
+                Platform.runLater(() -> Alertas.error(
+                        "No se pudo conectar con PostgreSQL. Revise db.properties y que el contenedor esté activo."));
+            }
+        });
+        hilo.setDaemon(true);
+        hilo.start();
     }
 }
